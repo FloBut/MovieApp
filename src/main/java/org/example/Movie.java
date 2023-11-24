@@ -4,6 +4,7 @@ package org.example;
 import jakarta.persistence.*;
 import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
 import java.util.List;
 //2. Simuleaza o aplicatie de filme
 //Un film contine mai multe caracatere, iar un caracter poate juca
@@ -20,33 +21,53 @@ import java.util.List;
 //Vad toata caracterele dintr-un film
 
 @Entity
+@Table(name = "movie")
 public class Movie {
+
     @Id
     @GeneratedValue
-    private long Id;
+    private long movieId;
     @Column
     private String name;
 
-    @ManyToOne //o franchise poate avea mai multe filme
-    @JoinColumn(name = "franchise_id")
+    @ManyToOne (cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    //o franchise poate avea mai multe filme
+    @JoinColumn(name = "franchise_Id")
     private Franchise franchise;
 
-    @OneToMany(mappedBy="movie", cascade = CascadeType.MERGE, orphanRemoval = true)// un tweet are o lista de comentarii si se leaga
-//un film poate avea o lista de caractere
+    @ManyToMany(mappedBy="movie")
+    //un film poate avea o lista de caractere
+    //un caracter poate juca in mai multe filme
     private List<Character> characters;
     @jakarta.persistence.Id
     private Long id;
 
-    public Movie() {
-    }
 
     public Movie(String name) {
         this.name = name;
     }
 
+    public Movie() {
 
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public long getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(long movieId) {
+        this.movieId = movieId;
+    }
 
     public String getName() {
+
         return name;
     }
 
@@ -63,6 +84,9 @@ public class Movie {
     }
 
     public List<Character> getCharacters() {
+        if (characters == null ) {
+            characters = new ArrayList<>();
+        }
         return characters;
     }
 
@@ -70,11 +94,15 @@ public class Movie {
         this.characters = characters;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "movieId=" + movieId +
+                ", name='" + name + '\'' +
+                ", franchise=" + franchise +
+                ", characters=" + characters +
+                '}';
     }
 
-    public Long getId() {
-        return id;
-    }
+
 }
